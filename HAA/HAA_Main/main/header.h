@@ -11,7 +11,7 @@
 #include "../../common/common_headers.h"
 
 // Version
-#define HAA_FIRMWARE_VERSION                "12.14.13"
+#define HAA_FIRMWARE_VERSION                "12.15.0"
 #define HAA_FIRMWARE_BETA_REVISION          ""          // Format: "b01"
 #define HAA_FIRMWARE_CODENAME               "Merlin"
 
@@ -81,7 +81,6 @@
 #define INIT_STATE_FIXED_INPUT              (4)
 #define INIT_STATE_LAST                     (5)
 #define INIT_STATE_INV_LAST                 (6)
-#define INIT_STATE_LAST_STR                 "{\"s\":5}"
 
 // MEPLHAA Script
 #define GENERAL_CONFIG                      "c"
@@ -345,6 +344,13 @@
 #define HM_TARGET_MODE_INT                  ch_group->ch[4]->value.int_value
 #define HM_HUM_TARGET_FLOAT                 ch_group->ch[5]->value.float_value
 #define HM_DEHUM_TARGET_FLOAT               ch_group->ch[6]->value.float_value
+
+#define LOCK_PHYSICAL_CONTROLS_SET          "lc"
+#define LOCK_PHYSICAL_CONTROLS_DEFAULT      (-1)
+#define FAN_ROTATION_SPEED_SET              "fs"
+#define FAN_ROTATION_SPEED_DEFAULT          (-1)
+#define FAN_SWING_MODE_SET                  "sw"
+#define FAN_SWING_MODE_DEFAULT              (-1)
 
 #define LIGHTBULB_TYPE_SET                  "ty"
 #define LIGHTBULB_TYPE                      lightbulb_group->type
@@ -787,13 +793,15 @@
 #define HOMEKIT_DEVICE_CATEGORY_SET         "ct"
 #define HOMEKIT_DEVICE_CATEGORY_DEFAULT     (1)
 
+#define HOMEKIT_NAME_SET                    "nm"
+
 #define BOOT_EARLY_DELAY                    "v"
 #define NEXT_SERV_CREATION_DELAY            "cd"
 #define EXIT_EMERGENCY_SETUP_MODE_TIME      (3000)
 #define SETUP_MODE_ACTIVATE_COUNT           "z"
 #define SETUP_MODE_DEFAULT_ACTIVATE_COUNT   (8)
 #define SETUP_MODE_TOGGLE_TIME_MS           (1050)
-#define CUSTOM_HAA_COMMAND                  "mc"
+#define CUSTOM_HAA_COMMAND                  "nm"
 #define CUSTOM_HAA_ADVANCED_COMMAND_LEN     (2)
 #define HAA_SETUP_ACCESSORY_SET             "s"
 

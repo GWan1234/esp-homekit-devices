@@ -1304,6 +1304,11 @@ static void wifi_config_connect(const uint8_t phy) {
     };
     
     sdk_wifi_station_set_config(&sta_config);
+    
+#if defined(CONFIG_IDF_TARGET_ESP32C5)
+    esp_wifi_set_band_mode(WIFI_BAND_MODE_AUTO);
+#endif
+    
     esp_wifi_set_bandwidth(WIFI_IF_STA, WIFI_BW_HT20);
     esp_wifi_set_ps(WIFI_PS_NONE);
 #endif

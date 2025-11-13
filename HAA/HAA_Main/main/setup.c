@@ -1452,6 +1452,10 @@ void wifi_config_connect(const uint8_t mode, const uint8_t phy, const bool with_
     };
     
     sdk_wifi_station_set_config(&sta_config);
+
+#if defined(CONFIG_IDF_TARGET_ESP32C5)
+    esp_wifi_set_band_mode(WIFI_BAND_MODE_AUTO);
+#endif
     
     if (mode == 0) {
         if (!context->bandwidth_40) {

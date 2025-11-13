@@ -51,11 +51,7 @@ static void setup_pin(uint8_t pin, int8_t pin_output, bool open_drain)
 {
 #ifdef ESP_PLATFORM
     if (pin_output < 0) {
-        gpio_mode_t gpio_mode = GPIO_MODE_OUTPUT;
-        if (open_drain) {
-            gpio_mode = GPIO_MODE_INPUT_OUTPUT_OD;
-        }
-        gpio_set_direction(pin, gpio_mode);
+        gpio_set_direction(pin, open_drain ? GPIO_MODE_INPUT_OUTPUT_OD : GPIO_MODE_OUTPUT);
         gpio_set_pull_mode(pin, GPIO_PULLUP_ONLY);
     } else {
         gpio_set_direction(pin, GPIO_MODE_INPUT);

@@ -27,7 +27,8 @@
 #define ESP_HAS_GPIO_GLITCH_FILTER          (1)
 #endif
 
-#if defined(CONFIG_IDF_TARGET_ESP32C6)
+#if defined(CONFIG_IDF_TARGET_ESP32C5) \
+    || defined(CONFIG_IDF_TARGET_ESP32C6)
 #define ESP_HAS_GPIO_FLEX_FILTER            (1)
 #endif
 
@@ -41,8 +42,14 @@
 #elif defined(CONFIG_IDF_TARGET_ESP32C3)
 #define HAA_TX_UART_DEFAULT_PIN             (21)
 
+#elif defined(CONFIG_IDF_TARGET_ESP32C5)
+#define HAA_TX_UART_DEFAULT_PIN             (11)
+
 #elif defined(CONFIG_IDF_TARGET_ESP32C6)
 #define HAA_TX_UART_DEFAULT_PIN             (19)
+
+#elif defined(CONFIG_IDF_TARGET_ESP32C61)
+#define HAA_TX_UART_DEFAULT_PIN             (11)
 
 #elif defined(CONFIG_IDF_TARGET_ESP32S2) \
     || defined(CONFIG_IDF_TARGET_ESP32S3)
@@ -111,7 +118,7 @@
 #define AUTO_REBOOT_ON_HANG_OTA_TIMEOUT     (2000000)
 #define BEST_RSSI_MARGIN                    (1)
 
-#define HIGH_HOMEKIT_CH_NUMBER              (7)
+#define HIGH_HOMEKIT_CH_NUMBER              (10)
 
 #define DEBUG(message, ...)                 printf("%s: " message "\n", __func__, ##__VA_ARGS__)
 #define INFO(message, ...)                  INFO_NNL(message "\n", ##__VA_ARGS__)

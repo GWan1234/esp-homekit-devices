@@ -1078,14 +1078,28 @@ static void mdns_recv(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_a
     ipaddr_ntoa_r(addr, addr_str, IPADDR_STRLEN_MAX);
     HOMEKIT_MDNS_PRINTF("\n\nmDNS IPv%d got %db from %s\n", IP_IS_V6(addr) ? 6 : 4, p->tot_len, addr_str);
 #endif
-
+    
     // Sanity checks on size
     if (mdns_response) {
         if (p->tot_len > (mdns_responder_reply_size) ||
             p->tot_len < (SIZEOF_DNS_HDR + SIZEOF_DNS_QUERY + 1)) {
+            
+            HOMEKIT_MDNS_PRINTF("! mDNS %ib ", p->tot_len);
+            
+            if (p->tot_len < (SIZEOF_DNS_HDR + SIZEOF_DNS_QUERY + 1)) {
+                uint8_t *msg = p->payload;
+                for (unsigned int i = 0; i < p->tot_len; i++) {
+                    HOMEKIT_MDNS_PRINTF("%02X ", msg[i]);
+                }
+            }
+            
             char addr_str[IPADDR_STRLEN_MAX];
             ipaddr_ntoa_r(addr, addr_str, IPADDR_STRLEN_MAX);
-            HOMEKIT_MDNS_PRINTF("! mDNS %ib from %s\n", p->tot_len, addr_str);
+            
+            HOMEKIT_MDNS_PRINTF("from %s\n", addr_str);
+            
+            //mdns_announce();
+            
         } else {
             struct mdns_hdr* hdrP = (struct mdns_hdr*) p->payload;
     #ifdef qLogAllTraffic

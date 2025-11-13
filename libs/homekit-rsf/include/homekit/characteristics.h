@@ -994,12 +994,26 @@
     .value = HOMEKIT_BOOL_(_value), \
     ##__VA_ARGS__
 
+/*
+ HOMEKIT_CHARACTERISTIC_NAME
+ - must start and end with a letter or number with the only exception of ending with a . (period).
+ - may have special characters - (dashes), " (quotes), ' (apostrophe), , (comma), . (period), #
+ (hash) and & (ampersand) only.
+ */
+
 #define HOMEKIT_CHARACTERISTIC_NAME HOMEKIT_APPLE_UUID2("23")
 #define HOMEKIT_DECLARE_CHARACTERISTIC_NAME(name, ...) \
     .type = HOMEKIT_CHARACTERISTIC_NAME, \
     .format = HOMEKIT_FORMAT_STRING, \
     .permissions = HOMEKIT_PERMISSIONS_PAIRED_READ, \
     .value = HOMEKIT_STRING_(name), \
+    ##__VA_ARGS__
+
+#define HOMEKIT_DECLARE_CHARACTERISTIC_NAME_STATIC(name, ...) \
+    .type = HOMEKIT_CHARACTERISTIC_NAME, \
+    .format = HOMEKIT_FORMAT_STRING, \
+    .permissions = HOMEKIT_PERMISSIONS_PAIRED_READ, \
+    .value = HOMEKIT_STRING_(name, .is_static=true), \
     ##__VA_ARGS__
 
 #define HOMEKIT_CHARACTERISTIC_OBSTRUCTION_DETECTED HOMEKIT_APPLE_UUID2("24")

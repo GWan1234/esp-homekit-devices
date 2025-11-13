@@ -254,7 +254,8 @@ typedef struct _lightbulb_group {
     uint16_t target[5];
 } lightbulb_group_t;
 
-#ifndef CONFIG_IDF_TARGET_ESP32C2
+#if !defined(CONFIG_IDF_TARGET_ESP32C2) \
+    && !defined(CONFIG_IDF_TARGET_ESP32C61)
 typedef struct _addressled {
     uint8_t map[5];
     
@@ -368,8 +369,7 @@ typedef struct _pwmh_channel {
 #endif
 
 typedef struct _main_config {
-    uint8_t wifi_status: 2;             // 2 bits
-    uint8_t wifi_channel: 4;            // 4 bits
+    uint8_t wifi_status: 6;             // 2 bits
     bool ir_tx_inv: 1;
     bool rf_tx_inv: 1;
     uint8_t ir_tx_gpio: 6;              // 6 bits
@@ -378,7 +378,8 @@ typedef struct _main_config {
     int8_t setup_mode_toggle_counter;
     int8_t setup_mode_toggle_counter_max;
     
-    uint32_t zc_delay;  // 16 bits
+    uint32_t zc_delay: 24;              // 16 bits
+    uint8_t wifi_channel;
     
     uint16_t setup_mode_time;
     uint16_t wifi_roaming_count;
@@ -418,7 +419,8 @@ typedef struct _main_config {
     
     led_t* status_led;
     
-#ifndef CONFIG_IDF_TARGET_ESP32C2
+#if !defined(CONFIG_IDF_TARGET_ESP32C2) \
+    && !defined(CONFIG_IDF_TARGET_ESP32C61)
     addressled_t* addressleds;
 #endif  // no CONFIG_IDF_TARGET_ESP32C2
     
