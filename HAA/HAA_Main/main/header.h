@@ -11,7 +11,7 @@
 #include "../../common/common_headers.h"
 
 // Version
-#define HAA_FIRMWARE_VERSION                "12.18.0"
+#define HAA_FIRMWARE_VERSION                "12.18.1"
 #define HAA_FIRMWARE_BETA_REVISION          ""          // Format: "b01"
 #define HAA_FIRMWARE_CODENAME               "Merlin"
 
@@ -40,7 +40,6 @@
 #define SET_ZONES_TASK_SIZE                 GLOBAL_TASK_SIZE
 #define LIGHTBULB_TASK_SIZE                 GLOBAL_TASK_SIZE
 #define POWER_MONITOR_TASK_SIZE             GLOBAL_TASK_SIZE
-#define FREE_MONITOR_TASK_SIZE              GLOBAL_TASK_SIZE
 #define LIGHT_SENSOR_TASK_SIZE              GLOBAL_TASK_SIZE
 #define WIFI_PING_GW_TASK_SIZE              (TASK_SIZE_FACTOR * (384))
 #define WIFI_RECONNECTION_TASK_SIZE         GLOBAL_TASK_SIZE
@@ -51,7 +50,7 @@
 #ifdef ESP_PLATFORM
 #define NETWORK_ACTION_TASK_SIZE            (TASK_SIZE_FACTOR * (2048))
 #define FREE_MONITOR_TASK_SIZE              (TASK_SIZE_FACTOR * (2048))
-#define NETWORK_REPLY_LEN_MAX               (4096)
+#define NETWORK_REPLY_LEN_MAX               (8192)
 #else
 #define NETWORK_ACTION_TASK_SIZE            (TASK_SIZE_FACTOR * (544))
 #define FREE_MONITOR_TASK_SIZE              GLOBAL_TASK_SIZE
@@ -814,7 +813,7 @@
 
 #define IRRF_CAPTURE_BUFFER_SIZE            (2048)
 
-#define FORCE_ALLOC_MAX_ERRORS              (10)
+//#define FORCE_ALLOC_MAX_ERRORS              (10)
 
 #define SAVE_STATES_TIMER                   ch_group_find_by_serv(SERV_TYPE_ROOT_DEVICE)->timer
 #define WIFI_WATCHDOG_TIMER                 ch_group_find_by_serv(SERV_TYPE_ROOT_DEVICE)->timer2

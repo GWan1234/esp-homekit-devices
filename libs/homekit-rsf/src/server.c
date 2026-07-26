@@ -415,6 +415,7 @@ void pairing_context_free() {
     }
 }
 
+/*
 static int homekit_low_dram() {
     const uint_fast32_t free_heap = xPortGetFreeHeapSize();
     if (free_heap < HOMEKIT_MIN_FREEHEAP) {
@@ -424,13 +425,14 @@ static int homekit_low_dram() {
     
     return false;
 }
+*/
 
 void homekit_disconnect_client(client_context_t* context) {
     context->disconnect = true;
     homekit_server->pending_close = true;
 }
 
-void IRAM homekit_remove_oldest_client() {
+void homekit_remove_oldest_client() {
     if (homekit_server && homekit_server->client_count > HOMEKIT_MIN_CLIENTS) {
         client_context_t* context = homekit_server->clients;
         while (context) {
@@ -443,7 +445,6 @@ void IRAM homekit_remove_oldest_client() {
         }
     }
 }
-
 
 typedef enum {
     characteristic_format_type   = (1 << 1),
@@ -935,7 +936,7 @@ void send_tlv_response(client_context_t *context, tlv_values_t *values) {
     if (!payload) {
         CLIENT_ERROR(context, "TLV payload DRAM");
         tlv_free(values);
-        homekit_remove_oldest_client();
+        //homekit_remove_oldest_client();
         return;
     }
     
@@ -959,7 +960,7 @@ void send_tlv_response(client_context_t *context, tlv_values_t *values) {
     if (!response) {
         CLIENT_ERROR(context, "TLV response DRAM");
         free(payload);
-        homekit_remove_oldest_client();
+        //homekit_remove_oldest_client();
         return;
     }
     
@@ -1015,7 +1016,7 @@ void send_json_response(client_context_t *context, int status_code, byte *payloa
     char *response = malloc(response_size);
     if (!response) {
         CLIENT_ERROR(context, "Buffer of %d DRAM", response_size);
-        homekit_remove_oldest_client();
+        //homekit_remove_oldest_client();
         return;
     }
     size_t response_len = snprintf(response, response_size, http_headers, status_code, status_text, payload_size);
@@ -3623,11 +3624,11 @@ static void IRAM homekit_run_server() {
                 
                 context = context->next;
             }
-            
+            /*
             if (homekit_low_dram()) {
                 homekit_remove_oldest_client();
             }
-            
+            */
             homekit_server_close_clients();
         }
         

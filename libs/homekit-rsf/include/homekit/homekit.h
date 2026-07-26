@@ -56,8 +56,8 @@ void homekit_server_init(homekit_server_config_t *config);
 void homekit_set_max_clients(const unsigned int clients);
 #endif // HOMEKIT_CHANGE_MAX_CLIENTS
 
-// Remove oldest client to free some DRAM
-void homekit_remove_oldest_client();
+// Remove oldest client to free some DRAM. Used by old Apple Home Architecture
+//void homekit_remove_oldest_client();
 
 // Reset HomeKit accessory server, removing all pairings
 void homekit_server_reset();
