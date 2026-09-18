@@ -1295,7 +1295,6 @@ static void on_disconnect(void *arg, esp_event_base_t event_base, int32_t event_
     sdk_wifi_station_connect();
 }
     
-#ifdef ESP_PLATFORM
 static void wifi_config_set_advanced_wifi_params() {
 #if defined(CONFIG_IDF_TARGET_ESP32C5)
     esp_wifi_set_band_mode(WIFI_BAND_MODE_AUTO);
@@ -1310,7 +1309,6 @@ static void wifi_config_set_advanced_wifi_params() {
 #endif
     esp_wifi_set_ps(WIFI_PS_NONE);
 }
-#endif
 
 static void wifi_config_connect() {
 #else

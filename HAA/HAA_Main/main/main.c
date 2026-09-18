@@ -8874,21 +8874,22 @@ void normal_mode_init() {
                         }
                         
                         if (action_network->method_n > 0) {
-                            if (cJSON_rsf_GetObjectItemCaseSensitive(json_action_network, NETWORK_ACTION_CONTENT) != NULL) {
-                                action_network->content = strdup(cJSON_rsf_GetObjectItemCaseSensitive(json_action_network, NETWORK_ACTION_CONTENT)->valuestring);
-                            } else {
-                                action_network->content = uni_strdup("", &unistrings);
-                            }
-                            
-                            if (action_network->method_n ==  3 ||
-                                action_network->method_n == 13) {
-                                action_network->len = strlen(action_network->content);
-                            } else if (action_network->method_n ==  4 ||
-                                       action_network->method_n == 12 ||
-                                       action_network->method_n == 14) {
+                            if (action_network->method_n ==  4 ||
+                                action_network->method_n == 12 ||
+                                action_network->method_n == 14) {
                                 
-                                free(action_network->content);
                                 action_network->len = process_hexstr(cJSON_rsf_GetObjectItemCaseSensitive(json_action_network, NETWORK_ACTION_CONTENT)->valuestring, &action_network->raw, &unistrings);
+                            } else {
+                                if (cJSON_rsf_GetObjectItemCaseSensitive(json_action_network, NETWORK_ACTION_CONTENT) != NULL) {
+                                    action_network->content = uni_strdup(cJSON_rsf_GetObjectItemCaseSensitive(json_action_network, NETWORK_ACTION_CONTENT)->valuestring, &unistrings);
+                                } else {
+                                    action_network->content = uni_strdup("", &unistrings);
+                                }
+                                
+                                if (action_network->method_n ==  3 ||
+                                    action_network->method_n == 13) {
+                                    action_network->len = strlen(action_network->content);
+                                }
                             }
                         }
                         

@@ -1513,11 +1513,11 @@ static void on_got_ip(void* arg, esp_event_base_t event_base, int32_t event_id, 
 
 static void on_wifi_disconnect(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data) {
     ERROR("Wifi disconnected");
+    set_main_wifi_status_connecting();
     free_wifi_config_ip_info();
     sdk_wifi_station_connect();
 }
 
-#ifdef ESP_PLATFORM
 static void wifi_config_set_advanced_wifi_params(const uint8_t mode) {
     if (mode == 0) {
         uint8_t bandwidth = WIFI_BW20;
@@ -1545,7 +1545,6 @@ static void wifi_config_set_advanced_wifi_params(const uint8_t mode) {
         esp_wifi_set_ps(sleep_mode);
     }
 }
-#endif
 
 void wifi_config_connect(const uint8_t mode, const uint8_t phy) {
 #else

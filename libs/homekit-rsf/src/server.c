@@ -117,6 +117,7 @@ typedef struct _client_context_t client_context_t;
 
 #endif
 
+#define HOMEKIT_SERVER_SELECT_TIMEOUT_US            (80000)
 
 #define HOMEKIT_ENDPOINT_UNKNOWN                    (0)
 #define HOMEKIT_ENDPOINT_PAIR_SETUP                 (1)
@@ -171,7 +172,9 @@ typedef struct {
     int32_t listen_fd;
     int32_t max_fd;
     
-    uint8_t client_count: 5;
+    uint32_t last_keepalive;
+    
+    uint8_t client_count: 5;    // 2^5 = 32 max clients
     bool paired: 1;
     bool is_pairing: 1;
     bool pending_close: 1;
@@ -2179,6 +2182,8 @@ void homekit_server_on_get_characteristics(client_context_t *context) {
     CLIENT_INFO(context, "Get CH");
     DEBUG_HEAP();
     
+    homekit_server->last_keepalive = xTaskGetTickCount();
+    
     //unsigned int time_start = sdk_system_get_time_raw();
     
     query_param_t *qp = context->endpoint_params;
@@ -3478,16 +3483,24 @@ void homekit_characteristic_notify(homekit_characteristic_t *ch) {
     }
 }
 
-static inline void IRAM homekit_server_process_notifications() {
-    notification_t *notifications = homekit_server->notifications;
-    homekit_server->notifications = NULL;
+static inline void homekit_server_process_notifications(const bool only_keepalive) {
+    notification_t *notifications = NULL;
+    if (!only_keepalive) {
+        notifications = homekit_server->notifications;
+        homekit_server->notifications = NULL;
+    }
     
     client_context_t *context = homekit_server->clients;
     while (context) {
         notification_t *notification = notifications;
-        while (notification) {
-            if (homekit_characteristic_has_notify_subscription(notification->ch, context)) {
-                CLIENT_INFO(context, "Send Ev");
+        
+        while (only_keepalive || notification) {
+            if (only_keepalive || homekit_characteristic_has_notify_subscription(notification->ch, context)) {
+                if (only_keepalive) {
+                    CLIENT_INFO(context, "Kpalive");
+                } else {
+                    CLIENT_INFO(context, "Send Ev");
+                }
                 DEBUG_HEAP();
                 
                 json_stream* json = &homekit_server->json;
@@ -3505,17 +3518,19 @@ static inline void IRAM homekit_server_process_notifications() {
                 json_object_start(json);
                 json_string(json, "characteristics"); json_array_start(json);
                 
-                notification = notifications;
-                while (notification) {
-                    json_object_start(json);
-                    write_characteristic_json(json, context, notification->ch, 0, &notification->ch->value, 0);
-                    json_object_end(json);
-                    
-                    if (json->error) {
-                        break;
+                if (!only_keepalive) {
+                    notification = notifications;
+                    while (notification) {
+                        json_object_start(json);
+                        write_characteristic_json(json, context, notification->ch, 0, &notification->ch->value, 0);
+                        json_object_end(json);
+                        
+                        if (json->error) {
+                            break;
+                        }
+                        
+                        notification = notification->next;
                     }
-                    
-                    notification = notification->next;
                 }
                 
                 json_array_end(json);
@@ -3531,7 +3546,7 @@ static inline void IRAM homekit_server_process_notifications() {
                 
                 break;
             }
-
+            
             notification = notification->next;
         }
         
@@ -3601,7 +3616,7 @@ static void IRAM homekit_run_server() {
     FD_SET(homekit_server->listen_fd, &homekit_server->fds);
     homekit_server->max_fd = homekit_server->listen_fd;
     
-    struct timeval timeout = { 0, 80000 }; /* 0.08 seconds timeout (orig: 1s) */
+    struct timeval timeout = { 0, HOMEKIT_SERVER_SELECT_TIMEOUT_US }; /* 0.08 seconds timeout (orig: 1s) */
     int triggered_nfds;
     fd_set read_fds;
     
@@ -3632,8 +3647,16 @@ static void IRAM homekit_run_server() {
             homekit_server_close_clients();
         }
         
-        if (homekit_server->notifications) {
-            homekit_server_process_notifications();
+        if (homekit_server->paired) {
+            const uint32_t tick_count = xTaskGetTickCount();
+            
+            if (homekit_server->notifications) {
+                homekit_server_process_notifications(false);
+                
+            } else if (tick_count > (homekit_server->last_keepalive + (65 * 1000 / portTICK_PERIOD_MS))) {
+                homekit_server->last_keepalive = tick_count;
+                homekit_server_process_notifications(true);
+            }
         }
     }
     
